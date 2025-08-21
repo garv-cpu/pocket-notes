@@ -158,17 +158,27 @@ export default function Layout() {
                   options={{
                     animation: "slide_from_right",
                     presentation: "card",
-                    headerRight: () => <ShareButton />,
                   }}
                 />
 
                 <Stack.Screen name="settings" options={{ animation: "none" }} />
-                <Stack.Screen name="Insights" options={{ animation: "none" }} />
+                <Stack.Screen
+                  name="Insights"
+                  options={{
+                    animation: "slide_from_bottom",
+                    presentation: "card",
+                  }}
+                />
               </Stack>
 
               {/* 🔒 Full-screen lock overlay (always above navigation) */}
               {isLocked && (
-                <View style={[StyleSheet.absoluteFillObject, styles.lockScreenOverlay]}>
+                <View
+                  style={[
+                    StyleSheet.absoluteFillObject,
+                    styles.lockScreenOverlay,
+                  ]}
+                >
                   <Text style={styles.lockScreenTitle}>Pocket Notes</Text>
                   <Text style={styles.lockScreenMessage}>
                     App Locked. Authenticate to continue.
@@ -176,7 +186,10 @@ export default function Layout() {
                   <Button
                     mode="contained"
                     onPress={authenticateBiometrics}
-                    style={[styles.unlockButton, { backgroundColor: theme.colors.primary }]}
+                    style={[
+                      styles.unlockButton,
+                      { backgroundColor: theme.colors.primary },
+                    ]}
                     labelStyle={styles.unlockButtonLabel}
                   >
                     Unlock

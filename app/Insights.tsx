@@ -16,11 +16,50 @@ interface Note {
 }
 
 const getPocketInsights = (notes: Note[]) => {
-  const insights = {
-    totalPockets: notes.length,
-  };
+  if (notes.length === 0) {
+    return {
+      totalPockets: 0,
+    };
+  }
 
-  return insights;
+  // Calculate notes created per month
+  const firstNoteDate = notes.reduce((minDate, note) =>
+    note.createdAt && note.createdAt < minDate ? note.createdAt : minDate,
+    notes[0].createdAt || Date.now()
+  );
+  const now = Date.now();
+  const monthsElapsed = (now - (firstNoteDate || now)) / (1000 * 60 * 60 * 24 * 30.44);
+  const avgNotesPerMonth = monthsElapsed > 1 ? (notes.length / monthsElapsed).toFixed(1) : notes.length;
+
+  // Calculate average word count
+  const totalWords = notes.reduce((sum, note) => sum + (note.content?.split(/\s+/).filter(Boolean).length || 0), 0);
+  const avgWordsPerNote = totalWords > 0 ? Math.round(totalWords / notes.length) : 0;
+
+  // Analyze categories
+  const categories: { [key: string]: number } = {};
+  notes.forEach((note) => {
+    categories[note.category] = (categories[note.category] || 0) + 1;
+  });
+  
+  const sortedCategories = Object.keys(categories).sort((a, b) => categories[b] - categories[a]);
+  const mostCommonCategory = sortedCategories.length > 0 ? sortedCategories[0] : "N/A";
+  const uniqueCategories = Object.keys(categories).length;
+
+  // Get most recent note date
+  const mostRecentNoteDate = notes.reduce((maxDate, note) =>
+    note.updatedAt && note.updatedAt > maxDate ? note.updatedAt : maxDate,
+    0
+  );
+  const timeSinceLastNote = (Date.now() - mostRecentNoteDate) / (1000 * 60 * 60 * 24);
+
+  return {
+    totalPockets: notes.length,
+    avgNotesPerMonth: parseFloat(avgNotesPerMonth),
+    avgWordsPerNote,
+    mostCommonCategory,
+    uniqueCategories,
+    timeSinceLastNote: timeSinceLastNote.toFixed(0),
+  };
 };
 
 export default function InsightsScreen() {
@@ -56,7 +95,7 @@ export default function InsightsScreen() {
     >
       {loading ? (
         <ActivityIndicator animating={true} color="#FFD700" size="large" />
-      ) : insights ? (
+      ) : insights && insights.totalPockets > 0 ? (
         <View>
           <Card style={styles.card}>
             <Card.Content>
@@ -65,16 +104,43 @@ export default function InsightsScreen() {
               </Text>
             </Card.Content>
           </Card>
+          
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text style={styles.cardContent}>
+                You've created an average of {insights.avgNotesPerMonth} pockets per month.
+              </Text>
+            </Card.Content>
+          </Card>
+          
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text style={styles.cardContent}>
+                Your average pocket length is {insights.avgWordsPerNote} words.
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text style={styles.cardContent}>
+                Your most common pocket category is {insights.mostCommonCategory ? insights.mostCommonCategory : "not available"}.
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text style={styles.cardContent}>
+                You have used {insights.uniqueCategories} unique categories.
+              </Text>
+            </Card.Content>
+          </Card>
+
         </View>
       ) : (
         <Text style={styles.emptyText}>No pockets to analyze yet. Start writing!</Text>
       )}
-
-      {/* More Insights Coming Soon Section */}
-      <View style={styles.bottomSection}>
-        <Text style={styles.bottomText}>More insights coming soon!</Text>
-      </View>
-      {/* End of More Insights Coming Soon Section */}
     </ScrollView>
   );
 }
