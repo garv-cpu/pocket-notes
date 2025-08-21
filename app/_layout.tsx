@@ -153,6 +153,14 @@ export default function Layout() {
                     headerRight: () => <ShareButton />,
                   }}
                 />
+                <Stack.Screen
+                  name="chat"
+                  options={{
+                    animation: "slide_from_right",
+                    presentation: "card",
+                    headerRight: () => <ShareButton />,
+                  }}
+                />
 
                 <Stack.Screen name="settings" options={{ animation: "none" }} />
                 <Stack.Screen name="Insights" options={{ animation: "none" }} />

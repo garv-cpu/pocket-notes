@@ -49,6 +49,7 @@ import InsightsScreen from "./Insights";
 import ConfirmModal from "../components/ConfirmModal"; // Import your custom modal
 import axios from "axios";
 import * as WebBrowser from "expo-web-browser";
+import PocketBuddy from "@/components/PocketBuddy";
 
 interface Note {
   id: string;
@@ -193,7 +194,6 @@ export default function NotesScreen() {
       transform: [{ scale: addPocketScale.value }],
     };
   });
-
 
   const insightsButtonStyle = useAnimatedStyle(() => {
     return {
@@ -713,7 +713,10 @@ export default function NotesScreen() {
             <Text style={styles.fabText}>Insights</Text>
           </Pressable>
         </Animated.View>
+
+      
       </Animated.View>
+      <PocketBuddy />
     </View>
   );
 }
